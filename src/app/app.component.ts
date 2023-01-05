@@ -3,8 +3,15 @@ import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 
+import { Post } from './models/post.model';
+import * as PostActions from './actions/post.actions';
+
 interface AppState {
   message: string;
+}
+
+interface PostState {
+  post: Post;
 }
 
 @Component({
@@ -17,8 +24,17 @@ export class AppComponent {
 
   message$: Observable<string>
 
-  constructor(private store: Store<AppState>) {
-    this.message$ = this.store.select('message')
+  post$: Observable<Post>
+
+  text: string = "";
+
+  constructor(
+    private store: Store<AppState>,
+    private postStore: Store<PostState>
+  ) {
+    this.message$ = this.store.select('message');
+
+    this.post$ = this.postStore.select('post');
   }
 
   spanishMessage() {
@@ -27,5 +43,21 @@ export class AppComponent {
 
   frenchMessage() {
     this.store.dispatch({type: 'FRENCH'})
+  }
+
+  editText() {
+    this.postStore.dispatch(new PostActions.EditText(this.text))
+  }
+
+  resetPost() {
+    this.postStore.dispatch(new PostActions.Reset())
+  }
+
+  upvote() {
+    this.postStore.dispatch(new PostActions.Upvote())
+  }
+
+  downvote() {
+    this.postStore.dispatch(new PostActions.Downvote())
   }
 }
